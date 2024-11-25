@@ -1,0 +1,1 @@
+# sme-fractional-ownership
