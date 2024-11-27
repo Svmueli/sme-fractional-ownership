@@ -1,0 +1,19 @@
+{
+    "canisters": {
+      "sme-fractional-ownership": {
+        "type": "azle",
+        "main": "src/index.ts",
+        "candid": "src/index.did",
+        "candid_gen": "http",
+        "build": "npx azle compile",
+        "wasm": ".azle/sme-fractional-ownership/sme-fractional-ownership.wasm",
+        "gzip": true
+      }
+    },
+    "networks": {
+      "local": {
+        "bind": "127.0.0.1:8000"
+      }
+    }
+  }
+  

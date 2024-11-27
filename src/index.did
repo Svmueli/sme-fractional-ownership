@@ -1,0 +1,26 @@
+type Asset = record {
+  assetId: Text;
+  name: Text;
+  value: Int;
+  totalShares: Int;
+  sharesSold: Int;
+  valuePerShare: Int;
+};
+
+type SME = record {
+  smeId: Text;
+  name: Text;
+  totalShares: Int;
+  sharesSold: Int;
+  pricePerShare: Int;
+  assets: Vec<Asset>;
+};
+
+service : {
+  "create_sme" : (name: Text, totalShares: Int, pricePerShare: Int) -> (smeId: Text);
+  "register_asset" : (smeId: Text, name: Text, value: Int, totalShares: Int) -> (assetId: Text);
+  "invest_in_sme" : (smeId: Text, amount: Int) -> ();
+  "invest_in_asset" : (smeId: Text, assetId: Text, amount: Int) -> ();
+  "get_sme" : (smeId: Text) -> (Option SME);
+  "get_asset" : (smeId: Text, assetId: Text) -> (Option Asset);
+};
