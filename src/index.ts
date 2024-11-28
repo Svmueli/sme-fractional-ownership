@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid"; 
 import { StableBTreeMap } from "azle"; 
-import { time } from "azle"; /
+import { time } from "azle";
 
-// SME class that represents an SME
+// Represents an SME (Small Medium Enterprise) for fractional ownership
 class SME {
   smeId: string; 
   name: string; 
@@ -13,7 +13,7 @@ class SME {
   investors: StableBTreeMap<string, number>; 
 }
 
-// Asset class that represents an asset owned by an SME
+// Represents an Asset that can be fractionally owned within an SME
 class Asset {
   assetId: string; 
   name: string; 
@@ -24,7 +24,7 @@ class Asset {
   smeId: string; 
 }
 
-// Storage for SME & Asset data using StableBTreeMap for persistence
+// StableBTreeMap is used for persistent storage across canister upgrades
 const smeStorage = StableBTreeMap<string, SME>(0);
 const assetStorage = StableBTreeMap<string, Asset>(1);
 
@@ -41,10 +41,11 @@ export function create_sme(name: string, totalShares: number, pricePerShare: num
     investors: new StableBTreeMap<string, number>(0), 
   };
   smeStorage.insert(smeId, newSME); 
+  console.log(`Created new SME with id: ${smeId}`);
   return smeId; 
 }
 
-// Function to register an asset for a given SME
+// Function to register an asset for an SME
 export function register_asset(smeId: string, name: string, value: number, totalShares: number): string {
   const smeOpt = smeStorage.get(smeId); 
   if (!smeOpt) {
@@ -63,6 +64,7 @@ export function register_asset(smeId: string, name: string, value: number, total
   };
 
   smeOpt.assets.insert(assetId, newAsset); 
+  console.log(`Registered new asset with id: ${assetId}`);
   return assetId; 
 }
 
@@ -73,13 +75,13 @@ export function invest_in_sme(smeId: string, amount: number) {
     throw new Error(`SME with id=${smeId} not found`); 
   }
 
-  // Calculate how many shares the investor can buy based on the amount
   const sharesToPurchase = Math.floor(amount / smeOpt.pricePerShare);
   if (smeOpt.sharesSold + sharesToPurchase > smeOpt.totalShares) {
     throw new Error("Not enough shares available for purchase"); 
   }
 
   smeOpt.sharesSold += sharesToPurchase; 
+  console.log(`Investor purchased ${sharesToPurchase} shares in SME ${smeId}`);
 }
 
 // Function for investing in an asset (buying shares in a specific asset)
@@ -94,13 +96,13 @@ export function invest_in_asset(smeId: string, assetId: string, amount: number) 
     throw new Error(`Asset with id=${assetId} not found`); 
   }
 
-  // Calculate how many shares the investor can buy based on the amount
   const sharesToPurchase = Math.floor(amount / assetOpt.valuePerShare);
   if (assetOpt.sharesSold + sharesToPurchase > assetOpt.totalShares) {
     throw new Error("Not enough shares available for purchase in the asset"); 
   }
 
   assetOpt.sharesSold += sharesToPurchase; 
+  console.log(`Investor purchased ${sharesToPurchase} shares in asset ${assetId}`);
 }
 
 // Function to retrieve an SME by its ID
